@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEU Library Visitor App</title>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyBh2knqhUrqko48MBxKLLX3uhcWM4-_DoY",
+  authDomain: "neu-library-visitor.firebaseapp.com",
+  projectId: "neu-library-visitor",
+  storageBucket: "neu-library-visitor.appspot.com",
+  messagingSenderId: "320271193731",
+  appId: "1:320271193731:web:f3f5cfe1d07c1887f8adb6",
+  measurementId: "G-HH9H155CRF"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Visitor login & check-in
+async function loginAndCheckIn() {
+  const college = document.getElementById("college").value.trim();
+  const role = document.getElementById("role").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const purpose = document.getElementById("purpose").value;
+
+  if (!college || !role || !email) {
+    alert("Please fill in all fields!");
+    return;
+  }
+
+  if (!email.endsWith("@neu.edu.ph")) {
+    alert("Only NEU emails allowed!");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "visits"), {
+      college: college,
+      role: role,
+      email: email,
+      purposeOfVisit: purpose,
+      timestamp: serverTimestamp(),
+      blocked: false
+    });
+
+    window.location.href = `/landing.html?email=${encodeURIComponent(email)}&college=${encodeURIComponent(college)}&role=${encodeURIComponent(role)}&purpose=${encodeURIComponent(purpose)}`;
+  } catch (err) {
+    console.error(err);
+    alert("Check-in failed!");
+  }
+}
+
+// Go to Admin Dashboard
+function goToAdmin() {
+  window.location.href = "/admin.html";
+}
+
+window.loginAndCheckIn = loginAndCheckIn;
+window.goToAdmin = goToAdmin;
+</script>
+
+<style>
+body {
+  font-family: 'Roboto', sans-serif;
+  background: url('cics.jpg') no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+.card {
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 40px 30px;
+  border-radius: 15px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.25);
+}
+.card:hover {
+  transform: translateY(-5px);
+}
+h1 {
+  margin-bottom: 20px;
+  color: white;
+}
+label {
+  display: block;
+  width: 90%;
+  margin: 0 auto 5px auto;
+  text-align: left;
+  font-weight: 500;
+  color: white;
+}
+input, select, button {
+  width: 90%;
+  padding: 12px;
+  margin: 10px auto;
+  display: block;
+  border-radius: 8px;
+  font-size: 16px;
+}
+input, select {
+  background: rgba(255,255,255,0.9);
+  border: none;
+}
+button {
+  background: #28a745;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+button:hover {
+  opacity: 0.9;
+}
+#adminBtn {
+  background: #007bff;
+}
+#adminBtn:hover {
+  background: #0056b3;
+}
+</style>
+</head>
+
+<body>
+<div class="card">
+  <img src="logo.png" alt="NEU Logo" style="width:80px; margin-bottom:15px;">
+  <h1>NEU Library Visitor</h1>
+
+  <label for="college">College</label>
+  <select id="college">
+    <option value="">Select your college</option>
+    <option value="College of Arts">College of Arts</option>
+    <option value="College of Nursing">College of Nursing</option>
+    <option value="College of Business">College of Business</option>
+    <option value="College of Education">College of Education</option>
+    <option value="College of Engineering">College of Engineering</option>
+    <option value="Other">Other</option>
+  </select>
+
+  <label for="role">Role</label>
+  <select id="role">
+    <option value="">Select your role</option>
+    <option value="Student">Student</option>
+    <option value="Faculty">Faculty</option>
+    <option value="Staff">Staff</option>
+    <option value="Visitor">Visitor</option>
+  </select>
+
+  <label for="email">NEU Email</label>
+  <input type="email" id="email" placeholder="Enter your NEU email">
+
+  <label for="purpose">Purpose of Visit</label>
+  <select id="purpose">
+    <option value="Study">Study</option>
+    <option value="Research">Research</option>
+    <option value="Borrowing">Borrowing</option>
+    <option value="Other">Other</option>
+  </select>
+
+  <button onclick="loginAndCheckIn()">Login & Check In</button>
+  <button id="adminBtn" onclick="goToAdmin()">Go to Admin Dashboard</button>
+</div>
+</body>
+</html>

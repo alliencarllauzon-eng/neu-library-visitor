@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEU Library Landing</title>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getFirestore, collection, getDocs, where, query } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBh2knqhUrqko48MBxKLLX3uhcWM4-_DoY",
+  authDomain: "neu-library-visitor.firebaseapp.com",
+  projectId: "neu-library-visitor",
+  storageBucket: "neu-library-visitor.appspot.com",
+  messagingSenderId: "320271193731",
+  appId: "1:320271193731:web:f3f5cfe1d07c1887f8adb6",
+  measurementId: "G-HH9H155CRF"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function getQueryParam(param) {
+  return new URLSearchParams(window.location.search).get(param);
+}
+
+async function loadRecentVisits(email) {
+  const listEl = document.getElementById("visitList");
+  const countEl = document.getElementById("visitCount");
+  listEl.innerHTML = "";
+  countEl.textContent = "";
+
+  if (!email) {
+    listEl.innerHTML = "<li>Email not provided.</li>";
+    return;
+  }
+
+  try {
+    const visitsRef = collection(db, "visits");
+    const q = query(visitsRef, where("email", "==", email));
+    const snapshot = await getDocs(q);
+
+    const totalVisits = snapshot.size;
+    countEl.textContent = `Total Visits: ${totalVisits}`;
+
+    if (snapshot.empty) {
+      listEl.innerHTML = "<li>No visits found yet.</li>";
+      return;
+    }
+
+    const visitsArray = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    visitsArray.sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+
+    visitsArray.forEach(data => {
+      const ts = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString() : "-";
+      const li = document.createElement("li");
+      li.textContent = `${ts} | ${data.college || "-"} | ${data.purposeOfVisit || "-"} | ${data.isEmployee ? "Employee" : "Student"}`;
+      listEl.appendChild(li);
+    });
+
+  } catch (err) {
+    console.error(err);
+    listEl.innerHTML = "<li>Failed to load visits.</li>";
+  }
+}
+
+window.onload = () => {
+  const email = getQueryParam("email");
+  const college = getQueryParam("college") || "-";
+  const purpose = getQueryParam("purpose") || "-";
+
+  document.getElementById("welcome").textContent = `Welcome to NEU Library, ${email || "Guest"}!`;
+  document.getElementById("info").textContent = `College: ${college} | Purpose: ${purpose}`;
+
+  if (email) loadRecentVisits(email);
+};
+</script>
+
+<style>
+body {
+  font-family: 'Roboto', sans-serif;
+  background: url('cics.jpg') no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+}
+.container {
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 15px;
+  padding: 30px;
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+}
+h1 { margin-bottom: 10px; }
+#visitCount { font-weight: bold; margin-bottom: 15px; }
+ul { list-style: none; padding: 0; margin-top: 10px; text-align: left; }
+li { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.3); }
+p#info { margin-bottom: 15px; font-weight: 500; }
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h1 id="welcome">Welcome!</h1>
+  <p id="info"></p>
+  <p id="visitCount"></p>
+  <h3>Your Recent Visits:</h3>
+  <ul id="visitList">
+    <li>Loading...</li>
+  </ul>
+</div>
+</body>
+</html>
