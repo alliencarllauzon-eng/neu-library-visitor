@@ -1,45 +1,29 @@
 # NEU Library Visitor App
 
-The **NEU Library Visitor App** is a web-based application designed to manage visitor check-ins for the NEU Library. Visitors can log in with their NEU email, select their college, role, and purpose of visit. Admins can view visitor statistics and detailed logs through a protected dashboard.
+This is a web application for tracking visitor check-ins at NEU Library. Visitors can log their details such as college, role, email, and purpose of visit. Admins can view all visits and filter them by college, purpose, or role.
 
 ## Features
 
-- Visitor login & check-in
-- Role-based input (Student, Faculty, Staff, Visitor)
-- Purpose of visit selection
-- Real-time tracking of visits
-- Admin dashboard with:
-  - Total visits
-  - Filtered visits by college, reason, and role
-  - Detailed visitor logs
-- Secure admin access (only allowed emails can access the dashboard)
+- **Visitor Check-In**: Users can log their visit with their NEU email.
+- **Role Selection**: Specify role as Student, Faculty, Staff, or Visitor.
+- **Recent Visits**: Visitors can see their previous visits.
+- **Admin Dashboard**: Admins can view all visits with filters.
+- **Firebase Backend**: Stores visit data securely using Firebase Firestore.
+
+## Live Application
+
+Check out the live deployed version here: [NEU Library Visitor App](https://neu-library-visitor.web.app)
 
 ## Admin Access
 
-Only the following admin emails can log in to the admin dashboard:
+Only the following NEU emails can access the admin dashboard:
 
 - `admin1@neu.edu.ph`
 - `jcesperanza@neu.edu.ph`
 
-All other users are restricted.
-
-## Live Demo
-
-You can try the app live here:  
-[NEU Library Visitor App](https://neu-library-visitor.web.app)
-
-## Technologies Used
-
-- **Firebase**: Authentication & Firestore database
-- **HTML, CSS, JavaScript**: Frontend
-- **GitHub**: Version control
-
-## Deployment
-
-The project is deployed via **Firebase Hosting**. All updates are automatically reflected at the live URL above when pushed to Firebase.
-
-## Usage
+## How to Run Locally
 
 1. Clone this repository:
-   ```bash
-   git clone https://github.com/alliencarllauzon-eng/neu-library-visitor.git
+
+```bash
+git clone https://github.com/alliencarllauzon-eng/neu-library-visitor.git
